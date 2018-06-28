@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FizzLib
 {
-    public static class Extensions
+    public static class ExtensionsAndHelpers
     {
-        public static bool IsDivisibleBy(this int sourceNumber, int targetNumber)
+        public static bool IsDivisibleBy(this Int32 sourceNumber, Int32 targetNumber)
         {
             return (sourceNumber % targetNumber) == 0;
         }
@@ -28,30 +28,33 @@ namespace FizzLib
 
     public class FizzBuzz
     {
-        public IEnumerable<FizzBuzzResult> GetFizzBuzz(List<Tuple<int, string>> evaluations, int minVal = 1, int maxVal = 100)
+        public IEnumerable<FizzBuzzResult> GetFizzBuzz(List<Tuple<int, string>> evaluations, Int32 minVal = 1, Int32 maxVal = 100)
         {
-            List<FizzBuzzResult> result = new List<FizzBuzzResult>();
+            IEnumerable<FizzBuzzResult> result = new List<FizzBuzzResult>();
 
-            for (int i = minVal; i <= maxVal; i++)
+            return LongRange(minVal, maxVal).Select(k => new FizzBuzzResult
             {
-                var evaluatedDivisibleOutput = String.Empty;
+                InputValue = (Int32)k,
+                OutputValue = Evaluate(evaluations, (Int32)k)
+            });
+        }
 
-                if (evaluations.Any(j => i.IsDivisibleBy(j.Item1)))
-                {
-                    evaluatedDivisibleOutput = evaluations.Where(j => i.IsDivisibleBy(j.Item1)).Select(h => h.Item2).Aggregate((a, b) => a + b);
-                }
+        public string Evaluate(List<Tuple<int, string>> evaluations, Int32 val)
+        {
+            var evaluatedDivisibleOutput = String.Empty;
 
-                result.Add(new FizzBuzzResult
-                {
-                    InputValue = i,
-                    OutputValue = string.IsNullOrEmpty(evaluatedDivisibleOutput) ? i.ToString() : evaluatedDivisibleOutput
-                });             
+            if (evaluations.Any(j => val.IsDivisibleBy(j.Item1)))
+            {
+                evaluatedDivisibleOutput = evaluations.Where(j => val.IsDivisibleBy(j.Item1)).Select(h => h.Item2).Aggregate((a, b) => a + b);
             }
 
-            return result;
+            return string.IsNullOrEmpty(evaluatedDivisibleOutput) ? val.ToString() : evaluatedDivisibleOutput;
         }
-        
-    }
 
-    
+        public static IEnumerable<long> LongRange(long minVal, long maxVal)
+        {
+            for (long x = minVal; x <= maxVal; x++)
+                yield return x;
+        }
+    } 
 }
